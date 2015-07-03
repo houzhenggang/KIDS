@@ -1,9 +1,20 @@
-XPDIL ;SFISC/RSD - load Distribution Global ;05/05/2008
- ;;8.0;KERNEL;**15,44,58,68,108,422,525**;Jul 10, 1995;Build 10
+XPDIL ;SFISC/RSD - load Distribution Global ;2015-06-13  8:28 PM
+ ;;8.0;KERNEL;**15,44,58,68,108,422,525,PM2.5**;Jul 10, 1995;Build 10
+ ;
+ ; CHANGE: (VEN/LGC) 4/9/2015
+ ;   Routine modified to filter install through A1AEK1
+ ;    before allowing installation.  The filter checks
+ ;    that the site attempting to install the KIDS has
+ ;    the correct PATCH STREAM and has previously installed
+ ;    all earlier SEQ# patches for this package, if 
+ ;    they have switch PATCH STREAMS in the past.
  ;
 EN1 N POP,XPDA,XPDST,XPDIT,XPDT,XPDGP,XPDQUIT,XPDREQAB,XPDSKPE
  S:'$D(DT) DT=$$DT^XLFDT S:'$D(U) U="^"
  S XPDST=0
+ ; CHANGE: (VEN/LGC) 4/9/2015
+ N A1AEHDR
+ ;
  D ST I $G(XPDQUIT) D ABRTALL^XPDI(1) G NONE
  ;XPDST= starting Build
  ;XPDT("DA",ien)=seq # to install
@@ -12,6 +23,10 @@ EN1 N POP,XPDA,XPDST,XPDIT,XPDT,XPDGP,XPDQUIT,XPDREQAB,XPDSKPE
  ;XPDT("GP",global)= 1-replace, 0-overwrite^ien
  ;XPDGP=globals from a Global Package
  ;XPDSKPE=1 don't run Environment Check^has question been asked
+ ;
+ ;CHANGE: (VEN/LGC) 4/9/2015
+ I $L($T(^A1AEK1)),$$EN^A1AEK1(.A1AEHDR) D ABRTALL^XPDI(1) G NONE
+ ;
  S XPDIT=0,XPDSKPE="0^0"
  F  S XPDIT=$O(XPDT(XPDIT)) Q:'XPDIT  S XPDA=+XPDT(XPDIT) D  I '$D(XPDT) Q
  .;check if this Build has an Envir. Check
@@ -59,6 +74,9 @@ OPEN ;use open command
  ;
 GI N X,XPDSEQ,Y,Z
  U IO R X:10,Y:10 ;rwf was :0
+ ;CHANGE: (VEN/LGC) 4/9/2015
+ S A1AEHDR=X
+ ;
  U IO(0) W !!,X,!,"Comment: ",Y
  S XPDST("H")=Y,XPDST("H1")=Y_"  ;Created on "_$P(X,"KIDS Distribution saved on ",2)
  ;Z is the string of Builds in this file

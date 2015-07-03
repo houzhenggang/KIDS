@@ -1,6 +1,21 @@
-XPDIPM ;SFISC/RSD - Load a Packman Message ;05/28/99  10:08
- ;;8.0;KERNEL;**21,28,68,108**;Jul 05, 1995
+XPDIPM ;SFISC/RSD - Load a Packman Message ;2015-06-13  9:20 PM
+ ;;8.0;KERNEL;**21,28,68,108,PM2.5**;Jul 05, 1995
+ ;
+ ; CHANGE: (VEN/LGC) 4/9/2015
+ ;   Routine modified to filter install through A1AEK1
+ ;    before allowing installation.  The filter checks
+ ;    that the site attempting to install the KIDS has
+ ;    the correct PATCH STREAM and has previously installed
+ ;    all earlier SEQ# patches for this package, if 
+ ;    they have switch PATCH STREAMS in the past.
+ ;
+ ; CHANGE: (VEN/LGC) 6/2/2105
+ ;   Modified code at GI +5 to set XPDQUIT and QUIT rather than
+ ;    handle the abort myself
+ ;    
+ ;
  Q:'$D(^XMB(3.9,+$G(XMZ),0))
+ ;
  N X,XPD,Y S XPD=0
  F  S XPD=$O(^XMB(3.9,XMZ,2,XPD)) Q:+XPD'=XPD  S X=^(XPD,0) I $E(X,1,11)="$TXT $KIDS " Q
  S Y=$P(X,"$KIDS ",2)
@@ -21,6 +36,14 @@ GI D NXT Q:$G(XPDQUIT)
  S GR="^XTMP(""XPDI"","_XPDA_","
  F  D NXT Q:X=""!$D(XPDQUIT)  D
  .S @(GR_X)=Y
+ ;
+ ;CHANGE: (VEN/LGC) 4/9/2015
+ ;CHANGE: (VEN/LGC) 6/2/2015
+ N A1AEHDR S A1AEHDR=$G(^XMB(3.9,+$G(XMZ),0))
+ ;new code
+ I $L($T(^A1AEK1)),$$EN^A1AEK1(A1AEHDR) S XPDQUIT=1 Q
+ ;old code
+ ;I $L($T(^A1AEK1)),$$EN^A1AEK1(A1AEHDR) D ABRTALL^XPDI(1) G NONE^XPDIL
  Q
 NXT S (X,Y)="",XPD=$O(^XMB(3.9,XMZ,2,XPD)) G:+XPD'=XPD ERR S X=^(XPD,0)
  I $E(X,1,5)="$END " S X="" Q

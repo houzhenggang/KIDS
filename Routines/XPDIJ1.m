@@ -1,6 +1,7 @@
-XPDIJ1 ;SFISC/RSD - Cont. of Install Job ;05/11/2001  09:07
- ;;8.0;KERNEL;**41,68,108,200,559**;Jul 10, 1995;Build 4
+XPDIJ1 ;SFISC/RSD - Cont. of Install Job ;2015-06-13  8:27 PM
+ ;;8.0;KERNEL;**41,68,108,200,559,PM2.5**;Jul 10, 1995;Build 4
  ;Per VHA Directive  2004-038, this routine should not be modified.
+ ; 20141119 VEN/JLI - insertion made to support updating DHCP PATHCHES file (#11005) if functionality exists
 IN ;install XPDA
  ;XPDA=ien of file 9.7, XPDNM=package name
  Q:'$D(^XTMP("XPDI",XPDA))!'$D(^XPD(9.7,XPDA,0))
@@ -21,6 +22,9 @@ IN ;install XPDA
  E  D BMES^XPDUTL(" Install Restarted for "_XPDNM_" at "_$$HTE^XLFDT($H))
  D BMES^XPDUTL("Build Distribution Date: "_$$FMTE^XLFDT($P(XPD0,U,4)))
  D RTN Q:$D(XPDABORT)
+ ; 20141119 VEN/JLI - the following line added to update PATCH file (#11004) if functionality exists and patch includes data for file #11004
+ I $T(INSTALL^A1AEBLD)'="" D INSTALL^A1AEBLD(XPDNM)
+ ; VEN/JLI 20141119 - end of insertion
  D PRE Q:$D(XPDABORT)
  D FMDATA Q:$D(XPDABORT)
  D COMP Q:$D(XPDABORT)
